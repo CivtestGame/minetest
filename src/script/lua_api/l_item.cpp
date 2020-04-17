@@ -414,7 +414,9 @@ ItemStack& LuaItemStack::getItem()
 int LuaItemStack::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ItemStack item = read_item(L, 1, getGameDef(L)->idef());
+	ItemStack item;
+	if (!lua_isnone(L, 1))
+		item = read_item(L, 1, getGameDef(L)->idef());
 	LuaItemStack *o = new LuaItemStack(item);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
@@ -610,9 +612,11 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	std::string name = luaL_checkstring(L, 1);
 
 	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
-	content_t c = ndef->getId(name);
+	content_t content_id;
+	if (!ndef->getId(name, content_id))
+		throw LuaError("Unknown node: " + name);
 
-	lua_pushinteger(L, c);
+	lua_pushinteger(L, content_id);
 	return 1; /* number of results */
 }
 

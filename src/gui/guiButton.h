@@ -6,6 +6,8 @@
 
 #include "IrrCompileConfig.h"
 
+#include <IGUIStaticText.h>
+#include "irrlicht_changes/static_text.h"
 #include "IGUIButton.h"
 #include "IGUISpriteBank.h"
 #include "ITexture.h"
@@ -64,6 +66,9 @@ using namespace irr;
 
 #endif
 
+class ISimpleTextureSource;
+class StyleSpec;
+
 class GUIButton : public gui::IGUIButton
 {
 public:
@@ -102,34 +107,33 @@ public:
 	//! Checks if an override color is enabled
 	virtual bool isOverrideColorEnabled(void) const;
 
+	// PATCH
 	//! Sets an image which should be displayed on the button when it is in the given state.
 	virtual void setImage(gui::EGUI_BUTTON_IMAGE_STATE state,
-			video::ITexture* image=0,
+			video::ITexture* image=nullptr,
 			const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0));
 
 	//! Sets an image which should be displayed on the button when it is in normal state.
-	virtual void setImage(video::ITexture* image=0) override
-	{
-		setImage(gui::EGBIS_IMAGE_UP, image);
-	}
+	virtual void setImage(video::ITexture* image=nullptr) override;
 
 	//! Sets an image which should be displayed on the button when it is in normal state.
-	virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) override
-	{
-		setImage(gui::EGBIS_IMAGE_UP, image, pos);
-	}
+	virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) override;
 
 	//! Sets an image which should be displayed on the button when it is in pressed state.
-	virtual void setPressedImage(video::ITexture* image=0) override
-	{
-		setImage(gui::EGBIS_IMAGE_DOWN, image);
-	}
+	virtual void setPressedImage(video::ITexture* image=nullptr) override;
 
 	//! Sets an image which should be displayed on the button when it is in pressed state.
-	virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) override
-	{
-		setImage(gui::EGBIS_IMAGE_DOWN, image, pos);
-	}
+	virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) override;
+
+	//! Sets an image which should be displayed on the button when it is in hovered state.
+	virtual void setHoveredImage(video::ITexture* image=nullptr);
+
+	//! Sets the text displayed by the button
+	virtual void setText(const wchar_t* text) override;
+	// END PATCH
+
+	//! Sets an image which should be displayed on the button when it is in hovered state.
+	virtual void setHoveredImage(video::ITexture* image, const core::rect<s32>& pos);
 
 	//! Sets the sprite bank used by the button
 	virtual void setSpriteBank(gui::IGUISpriteBank* bank=0) override;
@@ -176,6 +180,11 @@ public:
 	//! Returns if the button is currently pressed
 	virtual bool isPressed() const override;
 
+	// PATCH
+	//! Returns if this element (or one of its direct children) is hovered
+	bool isHovered() const;
+	// END PATCH
+
 	//! Sets if the button should use the skin to draw its border
 	virtual void setDrawBorder(bool border=true) override;
 
@@ -215,6 +224,13 @@ public:
 
 
 	void setColor(video::SColor color);
+	// PATCH
+	void setHoveredColor(video::SColor color);
+	void setPressedColor(video::SColor color);
+
+	//! Set element properties from a StyleSpec
+	virtual void setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc);
+	// END PATCH
 
 
 	//! Do not drop returned handle
@@ -224,28 +240,6 @@ public:
 protected:
 	void drawSprite(gui::EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;
-
-private:
-
-	struct ButtonSprite
-	{
-		ButtonSprite() : Index(-1), Loop(false), Scale(false)
-		{
-		}
-
-		bool operator==(const ButtonSprite& other) const
-		{
-			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
-		}
-
-		s32 Index;
-		video::SColor Color;
-		bool Loop;
-		bool Scale;
-	};
-
-	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
-	gui::IGUISpriteBank* SpriteBank;
 
 	struct ButtonImage
 	{
@@ -288,6 +282,30 @@ private:
 		core::rect<s32> SourceRect;
 	};
 
+	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed, const ButtonImage* images) const;
+
+private:
+
+	struct ButtonSprite
+	{
+		ButtonSprite() : Index(-1), Loop(false), Scale(false)
+		{
+		}
+
+		bool operator==(const ButtonSprite& other) const
+		{
+			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
+		}
+
+		s32 Index;
+		video::SColor Color;
+		bool Loop;
+		bool Scale;
+	};
+
+	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
+	gui::IGUISpriteBank* SpriteBank;
+
 	ButtonImage ButtonImages[gui::EGBIS_COUNT];
 
 	gui::IGUIFont* OverrideFont;
@@ -307,4 +325,12 @@ private:
 	bool ScaleImage;
 
 	video::SColor Colors[4];
+	// PATCH
+	video::SColor HoveredColors[4];
+	video::SColor PressedColors[4];
+
+	gui::IGUIStaticText *StaticText;
+
+	core::rect<s32> BgMiddle;
+	// END PATCH
 };
