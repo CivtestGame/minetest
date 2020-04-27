@@ -367,7 +367,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		return itemstack, nil
 	end
 
-	log("action", playername .. " places node "
+	log("verbose", playername .. " places node "
 		.. def.name .. " at " .. core.pos_to_string(place_to))
 
 	-- Add node and update
