@@ -446,6 +446,11 @@ function core.item_secondary_use(itemstack, placer)
 end
 
 function core.item_drop(itemstack, dropper, pos)
+	local def = itemstack:get_definition()
+	if def and def.groups and def.groups.undroppable then
+		return ItemStack(nil)
+	end
+
 	local dropper_is_player = dropper and dropper:is_player()
 	local p = table.copy(pos)
 	local cnt = itemstack:get_count()
