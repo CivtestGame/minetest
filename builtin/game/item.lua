@@ -620,7 +620,7 @@ function core.node_dig(pos, node, digger)
 			wielded = wdef.after_use(wielded, digger, node, dp) or wielded
 		else
 			-- Wear out tool
-			if not core.settings:get_bool("creative_mode") then
+			if not core.is_creative_enabled(diggername) then
 				wielded:add_wear(dp.wear)
 				if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
 					core.sound_play(wdef.sound.breaks, {
@@ -748,6 +748,8 @@ end
 -- Item definition defaults
 --
 
+local default_stack_max = tonumber(minetest.settings:get("default_stack_max")) or 99
+
 core.nodedef_default = {
 	-- Item properties
 	type="node",
@@ -757,7 +759,7 @@ core.nodedef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = default_stack_max,
 	usable = false,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -821,7 +823,7 @@ core.craftitemdef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = default_stack_max,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
@@ -859,7 +861,7 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = default_stack_max,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
