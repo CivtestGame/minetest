@@ -1946,6 +1946,8 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		removed_objects.pop();
 	}
 
+	std::string client_name = client->getName();
+
 	// Handle added objects
 	writeU16((u8*)buf, added_objects.size());
 	data.append(buf, 2);
@@ -1959,6 +1961,24 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 			warningstream << FUNCTION_NAME << ": NULL object id="
 				<< (int)id << std::endl;
 			continue;
+		}
+
+		ObjectProperties* obj_props = obj->accessObjectProperties();
+		std::set<std::string>& vo_players = obj_props->visible_override_players;
+
+		switch (obj_props->visible_override_mode) {
+		case 1:
+			if (vo_players.count(client_name))
+				continue;
+			break;
+
+		case 2:
+			if (!vo_players.count(client_name))
+				continue;
+			break;
+
+		default:
+			break;
 		}
 
 		// Get object type

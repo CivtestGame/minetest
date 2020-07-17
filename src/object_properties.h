@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set>
 
 struct ObjectProperties
 {
@@ -62,6 +63,13 @@ struct ObjectProperties
 	float zoom_fov = 0.0f;
 	bool use_texture_alpha = false;
 	bool shaded = true;
+
+	std::set<std::string> visible_override_players;
+
+	// 0 = visible for all,
+	// 1 = override is a blocklist
+	// 2 = override is an allowlist
+	s8 visible_override_mode = 0;
 
 	ObjectProperties();
 	std::string dump();

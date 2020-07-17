@@ -60,6 +60,9 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	// Disable zoom in survival mode using a value of 0
 	m_prop.zoom_fov = g_settings->getBool("creative_mode") ? 15.0f : 0.0f;
 
+	// m_prop.visible_override_mode = 1;
+	// m_prop.visible_override_players = { "R3" };
+
 	if (!g_settings->getBool("enable_damage"))
 		m_armor_groups["immortal"] = 1;
 }
