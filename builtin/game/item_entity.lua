@@ -313,18 +313,29 @@ core.register_entity(":__builtin:item", {
 	end,
 
 	on_punch = function(self, hitter)
-		local inv = hitter:get_inventory()
-		if inv and self.itemstring ~= "" then
-			local left = inv:add_item("main", self.itemstring)
-			if left and not left:is_empty() then
-				local left2 = inv:add_item("main2", left)
-				if left2 and not left2:is_empty() then
-					self:set_item(left2)
-					return
-				end
-			end
-		end
-		self.itemstring = ""
-		self.object:remove()
+           local inv = hitter:get_inventory()
+           if inv and self.itemstring ~= "" then
+              if player_api
+                 and player_api.give_item
+                 and hitter:is_player()
+              then
+                 local left = player_api.give_item(hitter, self.itemstring, true)
+                 if left and not left:is_empty() then
+                    self:set_item(left)
+                    return
+                 end
+              else
+                 local left = inv:add_item("main", self.itemstring)
+                 if left and not left:is_empty() then
+                    local left2 = inv:add_item("main2", left)
+                    if left2 and not left2:is_empty() then
+                       self:set_item(left2)
+                       return
+                    end
+                 end
+              end
+           end
+           self.itemstring = ""
+           self.object:remove()
 	end,
 })

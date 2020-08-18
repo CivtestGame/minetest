@@ -538,11 +538,19 @@ function core.handle_node_drops(pos, drops, digger)
 	local give_item
 	if inv then
 		give_item = function(item)
-			local left = inv:add_item("main", item)
-			if left and not left:is_empty() then
-				return inv:add_item("main2", item)
+			if player_api
+				and player_api.give_item
+				and digger:is_player()
+			then
+				return player_api.give_item(digger, item, true)
+			else
+				local left = inv:add_item("main", item)
+				if left and not left:is_empty() then
+					return inv:add_item("main2", item)
+				end
+				return left
 			end
-			return left
+
 		end
 	else
 		give_item = function(item)
