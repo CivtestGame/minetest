@@ -1064,13 +1064,15 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		std::string ip_str = addr.serializeString();
 		const std::vector<std::string> &names = m_clients.getPlayerNames();
 
-		actionstream << player->getName() << " [" << ip_str << "] joins game. List of players: ";
+		actionstream << player->getName() << " [" << ip_str << "] joins game."
+					 << std::endl;
+		verbosestream << "List of players: ";
 
 		for (const std::string &name : names) {
 			verbosestream << name << " ";
 		}
 
-		verbosestream << player->getName() <<std::endl;
+		verbosestream << player->getName() << std::endl;
 	}
 	return playersao;
 }
